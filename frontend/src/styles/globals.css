@@ -1,0 +1,267 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+:root {
+  --primary: #1a3a52;
+  --primary-light: #2d5a7b;
+  --primary-lighter: #3d7fa5;
+  --success: #27ae60;
+  --warning: #f39c12;
+  --danger: #e74c3c;
+  --gray-light: #f4f6f8;
+  --gray-medium: #ddd;
+  --gray-dark: #333;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #1a3a52 0%, #2d5a7b 50%, #3d7fa5 100%);
+  min-height: 100vh;
+  color: var(--gray-dark);
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-main {
+  flex: 1;
+  padding: 20px;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #1a3a52 0%, #2d5a7b 50%, #3d7fa5 100%);
+  color: white;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.header h1 {
+  font-size: 32px;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.header p {
+  font-size: 14px;
+  opacity: 0.95;
+}
+
+/* Stepper */
+.stepper {
+  display: flex;
+  background: #f4f6f8;
+  border-bottom: 2px solid #ddd;
+  padding: 0;
+  overflow-x: auto;
+}
+
+.step {
+  flex: 1;
+  padding: 20px 16px;
+  cursor: pointer;
+  text-align: center;
+  border-bottom: 4px solid transparent;
+  transition: all 0.25s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+  min-width: 120px;
+}
+
+.step .num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #cdd5dd;
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.step .label {
+  font-weight: 600;
+  color: #6b7785;
+  font-size: 12px;
+}
+
+.step.active {
+  background: white;
+  border-bottom-color: #1a3a52;
+}
+
+.step.active .num {
+  background: #1a3a52;
+}
+
+.step.active .label {
+  color: #1a3a52;
+}
+
+.step.done .num {
+  background: #27ae60;
+}
+
+.step.done .num::before {
+  content: '✓';
+}
+
+.step.done .num span {
+  display: none;
+}
+
+.step:hover {
+  background: #e8ecf0;
+}
+
+/* Pages */
+.page {
+  max-width: 1000px;
+  margin: 20px auto;
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.page h2 {
+  color: #1a3a52;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* Buttons */
+button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #1a3a52 0%, #2d5a7b 100%);
+  color: white;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  color: white;
+}
+
+.btn-secondary {
+  background: #f0f0f0;
+  color: #333;
+}
+
+/* Forms */
+textarea,
+input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+}
+
+textarea:focus,
+input:focus {
+  outline: none;
+  border-color: #1a3a52;
+  box-shadow: 0 0 0 4px rgba(26, 58, 82, 0.1);
+}
+
+/* Messages */
+.message {
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-top: 15px;
+  font-size: 13px;
+  border-left: 4px solid;
+}
+
+.message.success {
+  background: #d4edda;
+  color: #155724;
+  border-left-color: #28a745;
+}
+
+.message.error {
+  background: #f8d7da;
+  color: #721c24;
+  border-left-color: #f5365c;
+}
+
+.message.info {
+  background: #d1ecf1;
+  color: #0c5460;
+  border-left-color: #17a2b8;
+}
+
+.message.warning {
+  background: #fff3cd;
+  color: #856404;
+  border-left-color: #ffc107;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stepper {
+    gap: 0;
+  }
+
+  .step {
+    padding: 12px 10px;
+    min-width: 80px;
+  }
+
+  .step .label {
+    font-size: 10px;
+  }
+
+  .step .num {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .page {
+    padding: 20px;
+    margin: 10px;
+  }
+
+  .page h2 {
+    font-size: 18px;
+  }
+}

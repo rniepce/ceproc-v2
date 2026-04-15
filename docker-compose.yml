@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # Backend FastAPI
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - AZURE_OPENAI_KEY=${AZURE_OPENAI_KEY}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
+      - DATABASE_URL=sqlite:///./ceproc.db
+      - DEBUG=false
+    volumes:
+      - ./backend:/app/backend
+      - ./ceproc.db:/app/ceproc.db
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - ceproc-network
+
+  # Frontend Vite (dev)
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    environment:
+      - VITE_API_BASE=http://localhost:8000/api
+    command: npm run dev
+    depends_on:
+      - backend
+    networks:
+      - ceproc-network
+
+  # PostgreSQL (opcional, para produção)
+  # postgres:
+  #   image: postgres:16
+  #   environment:
+  #     POSTGRES_USER: ceproc
+  #     POSTGRES_PASSWORD: ceproc_password
+  #     POSTGRES_DB: ceproc_v2
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - ceproc-network
+
+networks:
+  ceproc-network:
+    driver: bridge
+
+# volumes:
+#   postgres_data:
