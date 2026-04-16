@@ -27,8 +27,11 @@ export const useDPT = () => {
       }
 
       const payload = {
-        texto_entrevista: interviewText,
-        metadados: metadata,
+        interview_text: interviewText,
+        process_name: metadata.processo || undefined,
+        analyst: metadata.analista || undefined,
+        department: metadata.departamento || undefined,
+        date: metadata.data || undefined,
       };
 
       try {
