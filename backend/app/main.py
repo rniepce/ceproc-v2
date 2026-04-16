@@ -57,6 +57,15 @@ app.include_router(kpi.router)
 app.include_router(gargalos.router)
 app.include_router(export.router)
 
+# ============= STATIC FILES (React SPA) =============
+# Mount frontend static files
+static_path = Path(__file__).parent.parent.parent / "static"
+if static_path.exists():
+    app.mount("/", StaticFiles(directory=str(static_path), html=True), name="static")
+    logger.info(f"✅ Static files mounted: {static_path}")
+else:
+    logger.warning(f"⚠️  Static files directory not found: {static_path}")
+
 # ============= CORE ROUTES =============
 
 @app.get("/api/health", response_model=HealthCheckResponse)
