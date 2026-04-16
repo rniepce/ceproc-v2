@@ -1,7 +1,7 @@
 """BPMN generation and visualization routes."""
 import logging
-from fastapi import APIRouter, HTTPException, Body
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel, Field
 from typing import Optional, List, Any, Dict
 from ..services.llm_service import get_llm_service
 from ..services.bpmn_processor import get_bpmn_processor
@@ -9,6 +9,16 @@ from ..services.bpmn_processor import get_bpmn_processor
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/bpmn", tags=["bpmn"])
+
+
+class BPMNValidationRequest(BaseModel):
+    """BPMN data for validation"""
+    startEvent: Optional[Dict[str, Any]] = None
+    endEvent: Optional[Dict[str, Any]] = None
+    activities: Optional[List[Dict[str, Any]]] = Field(default_factory=list)
+    gateways: Optional[List[Dict[str, Any]]] = Field(default_factory=list)
+    sequenceFlows: Optional[List[Dict[str, Any]]] = Field(default_factory=list)
+    pools: Optional[List[Dict[str, Any]]] = Field(default_factory=list)
 
 
 class BPMNGenerationRequest(BaseModel):
@@ -131,25 +141,20 @@ async def generate_bpmn_xml(request: BPMNGenerationRequest):
 
 
 @router.post("/validate")
-async def validate_bpmn(bpmn_data: Dict[str, Any] = Body(...)):
+async def validate_bpmn(request: BPMNValidationRequest):
     """
     Validate BPMN structure without generating XML.
 
     Args:
-        bpmn_data: BPMN JSON structure to validate
+        request: BPMN JSON structure to validate
 
     Returns:
         Validation results
     """
     logger.info("BPMN validation requested")
 
-    if not bpmn_data:
-        raise HTTPException(
-            status_code=400,
-            detail="BPMN JSON is required"
-        )
-
     try:
+        bpmn_data = request.dict()
         bpmn_processor = get_bpmn_processor()
         is_valid, errors = bpmn_processor.validate_bpmn(bpmn_data)
 

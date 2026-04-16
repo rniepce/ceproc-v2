@@ -1,13 +1,20 @@
 """Bottleneck analysis routes (Gargalos)."""
 import logging
-from fastapi import APIRouter, HTTPException, Body
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel, Field
 from typing import Optional, List, Any, Dict
 from ..services.llm_service import get_llm_service
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/gargalos", tags=["gargalos"])
+
+
+class ImprovementValidationRequest(BaseModel):
+    """Improvement data for validation"""
+    improvement: str
+    effort: str
+    expected_benefit: str
 
 
 class BottleneckAnalysisRequest(BaseModel):
@@ -202,12 +209,12 @@ async def quick_bottleneck_check(dpt: dict):
 
 
 @router.post("/validate-improvement")
-async def validate_improvement(improvement_data: Dict[str, Any] = Body(...)):
+async def validate_improvement(request: ImprovementValidationRequest):
     """
     Validate an improvement opportunity structure.
 
     Args:
-        improvement_data: Improvement dictionary
+        request: Improvement data to validate
 
     Returns:
         Validation results
@@ -216,6 +223,7 @@ async def validate_improvement(improvement_data: Dict[str, Any] = Body(...)):
 
     required_fields = ["improvement", "effort", "expected_benefit"]
     errors = []
+    improvement_data = request.dict()
 
     for field in required_fields:
         if field not in improvement_data or not improvement_data[field]:

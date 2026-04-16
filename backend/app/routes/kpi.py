@@ -1,7 +1,7 @@
 """KPI generation routes."""
 import logging
-from fastapi import APIRouter, HTTPException, Body
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel, Field
 from typing import Optional, List, Any, Dict
 from ..services.llm_service import get_llm_service
 from ..models import KPISchema
@@ -9,6 +9,25 @@ from ..models import KPISchema
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/kpi", tags=["kpi"])
+
+
+class KPIValidationRequest(BaseModel):
+    """KPI data for validation"""
+    indicador: str
+    objetivo: str
+    processo: str
+    cliente: str
+    metadados: str
+    fonte_extracao: str
+    formula_calculo: str
+    unidade: str
+    filtro: str
+    meta: str
+    periodicidade: str
+    polaridade: str
+    responsavel: str
+    criticidade: str
+    justificativa: str
 
 
 class KPIGenerationRequest(BaseModel):
@@ -110,18 +129,19 @@ async def generate_kpis(request: KPIGenerationRequest):
 
 
 @router.post("/validate")
-async def validate_kpi(kpi_data: Dict[str, Any] = Body(...)):
+async def validate_kpi(request: KPIValidationRequest):
     """
     Validate a KPI structure.
 
     Args:
-        kpi_data: KPI dictionary to validate
+        request: KPI data to validate
 
     Returns:
         Validation results
     """
     logger.info("KPI validation requested")
 
+    kpi_data = request.dict()
     required_fields = [
         "indicador", "objetivo", "processo", "cliente",
         "metadados", "fonte_extracao", "formula_calculo", "unidade",
