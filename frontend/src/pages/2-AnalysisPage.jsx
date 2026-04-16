@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import FieldValue from '../components/FieldValue';
 
 /**
  * Página 2: ANÁLISE - Revisão e edição da DPT extraída
@@ -297,8 +298,19 @@ function SectionCollapsible({
               {Array.isArray(dpt.etapas) ? (
                 dpt.etapas.map((etapa, idx) => (
                   <div key={idx} className="p-3 bg-gray-50 rounded border border-gray-200">
-                    <p className="font-medium text-gray-700">{idx + 1}. {etapa.titulo || 'Etapa'}</p>
-                    <p className="text-sm text-gray-600 mt-1">{etapa.descricao}</p>
+                    <p className="font-medium text-gray-700">
+                      {idx + 1}.{' '}
+                      {typeof etapa === 'object'
+                        ? (etapa.titulo ?? etapa.etapa ?? 'Etapa')
+                        : String(etapa)}
+                    </p>
+                    {typeof etapa === 'object' && etapa.descricao && (
+                      <p className="text-sm text-gray-600 mt-1">
+                        {typeof etapa.descricao === 'object'
+                          ? JSON.stringify(etapa.descricao)
+                          : String(etapa.descricao)}
+                      </p>
+                    )}
                   </div>
                 ))
               ) : (
@@ -310,7 +322,12 @@ function SectionCollapsible({
               {Array.isArray(dpt.atores) ? (
                 dpt.atores.map((ator, idx) => (
                   <div key={idx} className="p-2 bg-gray-50 rounded">
-                    <p className="font-medium text-gray-700">👤 {ator}</p>
+                    <p className="font-medium text-gray-700">
+                      👤{' '}
+                      {typeof ator === 'object'
+                        ? (ator.nome ?? ator.descricao ?? JSON.stringify(ator))
+                        : String(ator)}
+                    </p>
                   </div>
                 ))
               ) : (
@@ -397,7 +414,13 @@ function FieldEditor({ field, label, value, multiline, isEditing, onEdit, onSave
       className="p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors group"
     >
       <p className="text-sm font-medium text-gray-600 mb-1">{label}</p>
-      <p className="text-gray-800 whitespace-pre-wrap">{value || '(vazio)'}</p>
+      <div className="text-gray-800 whitespace-pre-wrap">
+        {value !== null && value !== undefined && value !== '' ? (
+          <FieldValue value={value} />
+        ) : (
+          <span className="text-gray-400 italic">(vazio)</span>
+        )}
+      </div>
       <p className="text-xs text-blue-600 group-hover:text-blue-700 mt-2">✏️ Clique para editar</p>
     </div>
   );

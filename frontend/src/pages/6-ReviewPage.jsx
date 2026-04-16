@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import FieldValue from '../components/FieldValue';
 
 /**
  * Página 6: REVISÃO - Revisão completa de todos os dados coletados
@@ -125,7 +126,9 @@ function ExecutiveSummary({ dpt, bpmn, kpis, kpiSummary, metadata }) {
       {/* Process Description */}
       <div>
         <h3 className="text-2xl font-bold text-gray-800 mb-4">📋 Descrição do Processo</h3>
-        <p className="text-gray-700 whitespace-pre-wrap">{dpt?.descricao || 'Não definido'}</p>
+        <div className="text-gray-700 whitespace-pre-wrap">
+          <FieldValue value={dpt?.descricao ?? 'Não definido'} />
+        </div>
       </div>
 
       {/* Key Information */}
@@ -184,9 +187,13 @@ function ExecutiveSummary({ dpt, bpmn, kpis, kpiSummary, metadata }) {
               <li key={idx} className="flex gap-3 p-3 bg-gray-50 rounded-lg">
                 <span className="font-bold text-blue-600 min-w-fit">{idx + 1}.</span>
                 <div>
-                  <p className="font-semibold text-gray-800">{etapa.titulo || etapa}</p>
-                  {typeof etapa === 'object' && etapa.descricao && (
-                    <p className="text-sm text-gray-600 mt-1">{etapa.descricao}</p>
+                  <p className="font-semibold text-gray-800">
+                    {typeof etapa === 'object'
+                      ? (etapa.titulo ?? etapa.descricao ?? etapa.etapa ?? JSON.stringify(etapa))
+                      : String(etapa)}
+                  </p>
+                  {typeof etapa === 'object' && etapa.descricao && etapa.titulo && (
+                    <p className="text-sm text-gray-600 mt-1">{String(etapa.descricao)}</p>
                   )}
                 </div>
               </li>
@@ -310,7 +317,9 @@ function InfoCard({ title, content }) {
   return (
     <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
       <h4 className="font-semibold text-gray-700 mb-2">{title}</h4>
-      <p className="text-gray-800 whitespace-pre-wrap">{content || '—'}</p>
+      <div className="text-gray-800 whitespace-pre-wrap">
+        <FieldValue value={content ?? null} />
+      </div>
     </div>
   );
 }

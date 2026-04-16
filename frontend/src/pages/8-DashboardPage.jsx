@@ -1,3 +1,5 @@
+import FieldValue from '../components/FieldValue';
+
 /**
  * Página 8: FINALIZAÇÃO - Dashboard de resultados e conclusão
  * Exibe um resumo executivo dos resultados da análise
@@ -77,10 +79,9 @@ export default function DashboardPage({ onRestart, workflow }) {
               {dpt?.descricao && (
                 <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                   <h3 className="font-semibold text-gray-800 mb-2">📋 Descrição</h3>
-                  <p className="text-gray-700 whitespace-pre-wrap text-sm">
-                    {dpt.descricao.substring(0, 300)}
-                    {dpt.descricao.length > 300 ? '...' : ''}
-                  </p>
+                  <div className="text-gray-700 whitespace-pre-wrap text-sm">
+                    <FieldValue value={dpt.descricao} />
+                  </div>
                 </div>
               )}
             </div>
