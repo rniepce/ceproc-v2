@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
-import { useDPT, useBPMN } from '../hooks';
 import { useAPI } from '../hooks';
 
 /**
  * Página 5: GARGALOS - Análise de bottlenecks e oportunidades de melhoria
  * Exibe gargalos identificados no processo e sugestões de melhoria
  * Permite filtros por severidade e análise de impacto
+ *
+ * Receives `workflow` prop from App.jsx for shared state access.
  */
-export default function GargalosPage({ onNext, onPrevious }) {
-  const { dpt } = useDPT();
-  const { bpmn } = useBPMN();
+export default function GargalosPage({ onNext, onPrevious, workflow }) {
+  const dpt = workflow?.dpt ?? null;
+  const bpmn = workflow?.bpmn ?? null;
   const gargalosAPI = useAPI('/api/gargalos', 'POST');
 
   const [gargalos, setGargalos] = useState(null);
@@ -44,22 +45,9 @@ export default function GargalosPage({ onNext, onPrevious }) {
   const handleQuickAnalysis = async () => {
     setAnalysisError('');
     try {
-      // Call quick analysis endpoint
-      const quickAPI = useAPI('/api/gargalos/quick', 'POST');
-      const result = await quickAPI.execute(dpt);
-      setGargalos({
-        status: 'success',
-        bottlenecks: result.bottleneck_indicators || [],
-        improvements: [],
-        summary: {
-          total_bottlenecks: result.bottleneck_indicators?.length || 0,
-          high_severity: 0,
-          medium_severity: 0,
-          low_severity: 0,
-          total_improvements: 0,
-        },
-        message: 'Análise rápida concluída',
-      });
+      // Quick analysis: use the main gargalos endpoint with just the DPT
+      const result = await gargalosAPI.execute({ dpt, bpmn: {}, severity_threshold: 'all' });
+      setGargalos(result);
     } catch (err) {
       setAnalysisError(err.message || 'Erro ao analisar gargalos');
     }

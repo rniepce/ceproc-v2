@@ -8,3 +8,4 @@ export { useDPT } from './useDPT';
 export { useBPMN } from './useBPMN';
 export { useKPI } from './useKPI';
 export { useExport } from './useExport';
+export { useWorkflow } from './useWorkflow';

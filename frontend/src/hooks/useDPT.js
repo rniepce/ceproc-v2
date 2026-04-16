@@ -28,10 +28,17 @@ export const useDPT = () => {
 
       const payload = {
         interview_text: interviewText,
+ railway/code-change-CyFQk_
+        process_name: metadata.processo || null,
+        analyst: metadata.analista || null,
+        department: metadata.departamento || null,
+        date: metadata.data || null,
+
         process_name: metadata.processo || undefined,
         analyst: metadata.analista || undefined,
         department: metadata.departamento || undefined,
         date: metadata.data || undefined,
+ main
       };
 
       try {

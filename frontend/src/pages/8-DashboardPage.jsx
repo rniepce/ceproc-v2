@@ -1,19 +1,23 @@
-import { useDPT, useBPMN, useKPI } from '../hooks';
-
 /**
  * Página 8: FINALIZAÇÃO - Dashboard de resultados e conclusão
  * Exibe um resumo executivo dos resultados da análise
  * Opções para nova análise ou compartilhamento
+ *
+ * Receives `workflow` prop from App.jsx for shared state access.
  */
-export default function DashboardPage({ onRestart }) {
-  const { dpt, metadata, resetDPT } = useDPT();
-  const { bpmn } = useBPMN();
-  const { kpis, getKPIStats } = useKPI();
+export default function DashboardPage({ onRestart, workflow }) {
+  const dpt = workflow?.dpt ?? null;
+  const metadata = workflow?.entrada?.metadata ?? {};
+  const bpmn = workflow?.bpmn ?? null;
+  const kpis = workflow?.kpis ?? [];
 
-  const kpiStats = getKPIStats();
+  const kpiStats = {
+    total: kpis.length,
+    completionPercentage: 0,
+    byCriticality: {},
+  };
 
   const handleNewAnalysis = () => {
-    resetDPT();
     onRestart();
   };
 
