@@ -59,12 +59,17 @@ app.include_router(export.router)
 
 # ============= STATIC FILES (React SPA) =============
 # Mount frontend static files
-static_path = Path(__file__).parent.parent.parent / "static"
+# In Docker: files are at /app/static (relative to WORKDIR /app)
+# In local dev: files are at ./static
+import os
+static_path = Path("/app/static") if os.path.exists("/app/static") else Path(__file__).parent.parent.parent / "static"
+
 if static_path.exists():
     app.mount("/", StaticFiles(directory=str(static_path), html=True), name="static")
-    logger.info(f"✅ Static files mounted: {static_path}")
+    logger.info(f"✅ Static files mounted from: {static_path}")
 else:
     logger.warning(f"⚠️  Static files directory not found: {static_path}")
+    logger.info("ℹ️  Frontend will not be served. Ensure Docker build copied dist/ to /static")
 
 # ============= CORE ROUTES =============
 
