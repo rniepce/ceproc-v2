@@ -1,8 +1,8 @@
 """BPMN generation and visualization routes."""
 import logging
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Body
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List, Any, Dict
 from ..services.llm_service import get_llm_service
 from ..services.bpmn_processor import get_bpmn_processor
 
@@ -131,19 +131,19 @@ async def generate_bpmn_xml(request: BPMNGenerationRequest):
 
 
 @router.post("/validate")
-async def validate_bpmn(request: dict):
+async def validate_bpmn(bpmn_data: Dict[str, Any] = Body(...)):
     """
     Validate BPMN structure without generating XML.
 
     Args:
-        request: BPMN JSON structure to validate
+        bpmn_data: BPMN JSON structure to validate
 
     Returns:
         Validation results
     """
     logger.info("BPMN validation requested")
 
-    if not request:
+    if not bpmn_data:
         raise HTTPException(
             status_code=400,
             detail="BPMN JSON is required"
@@ -151,17 +151,17 @@ async def validate_bpmn(request: dict):
 
     try:
         bpmn_processor = get_bpmn_processor()
-        is_valid, errors = bpmn_processor.validate_bpmn(request)
+        is_valid, errors = bpmn_processor.validate_bpmn(bpmn_data)
 
         return {
             "status": "valid" if is_valid else "invalid",
             "is_valid": is_valid,
             "errors": errors,
             "elements_count": (
-                len(request.get("activities", [])) +
-                len(request.get("gateways", [])) + 2
+                len(bpmn_data.get("activities", [])) +
+                len(bpmn_data.get("gateways", [])) + 2
             ),
-            "flows_count": len(request.get("sequenceFlows", []))
+            "flows_count": len(bpmn_data.get("sequenceFlows", []))
         }
 
     except Exception as e:

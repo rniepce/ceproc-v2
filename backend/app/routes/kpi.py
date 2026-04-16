@@ -1,8 +1,8 @@
 """KPI generation routes."""
 import logging
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Body
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Any, Dict
 from ..services.llm_service import get_llm_service
 from ..models import KPISchema
 
@@ -110,12 +110,12 @@ async def generate_kpis(request: KPIGenerationRequest):
 
 
 @router.post("/validate")
-async def validate_kpi(request: dict):
+async def validate_kpi(kpi_data: Dict[str, Any] = Body(...)):
     """
     Validate a KPI structure.
 
     Args:
-        request: KPI dictionary to validate
+        kpi_data: KPI dictionary to validate
 
     Returns:
         Validation results
@@ -134,21 +134,21 @@ async def validate_kpi(request: dict):
 
     # Check required fields
     for field in required_fields:
-        if field not in request or not request[field]:
+        if field not in kpi_data or not kpi_data[field]:
             errors.append(f"Missing or empty field: {field}")
 
     # Validate field formats
     valid_periodicidades = ["diária", "semanal", "mensal", "trimestral", "anual"]
-    if request.get("periodicidade") and request["periodicidade"] not in valid_periodicidades:
-        warnings.append(f"Unusual periodicity: {request.get('periodicidade')}")
+    if kpi_data.get("periodicidade") and kpi_data["periodicidade"] not in valid_periodicidades:
+        warnings.append(f"Unusual periodicity: {kpi_data.get('periodicidade')}")
 
     valid_polaridades = ["maximizar", "minimizar", "manter"]
-    if request.get("polaridade") and request["polaridade"] not in valid_polaridades:
-        warnings.append(f"Unusual polarity: {request.get('polaridade')}")
+    if kpi_data.get("polaridade") and kpi_data["polaridade"] not in valid_polaridades:
+        warnings.append(f"Unusual polarity: {kpi_data.get('polaridade')}")
 
     valid_criticidades = ["alta", "média", "baixa"]
-    if request.get("criticidade") and request["criticidade"] not in valid_criticidades:
-        warnings.append(f"Unusual criticality: {request.get('criticidade')}")
+    if kpi_data.get("criticidade") and kpi_data["criticidade"] not in valid_criticidades:
+        warnings.append(f"Unusual criticality: {kpi_data.get('criticidade')}")
 
     is_valid = len(errors) == 0
 
@@ -157,7 +157,7 @@ async def validate_kpi(request: dict):
         "is_valid": is_valid,
         "errors": errors,
         "warnings": warnings,
-        "fields_present": len([f for f in required_fields if f in request and request[f]]),
+        "fields_present": len([f for f in required_fields if f in kpi_data and kpi_data[f]]),
         "fields_total": len(required_fields)
     }
 
