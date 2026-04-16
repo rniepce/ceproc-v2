@@ -3,10 +3,21 @@
 # Stage 1: Build frontend
 FROM node:18-alpine AS frontend-builder
 WORKDIR /app/frontend
+
+# Copy package files and install dependencies
 COPY frontend/package*.json ./
-RUN npm ci
-COPY frontend .
-RUN npm run build
+RUN npm ci --prefer-offline --no-audit
+
+# Copy source code (excluding node_modules, dist from .dockerignore)
+COPY frontend/src ./src
+COPY frontend/public ./public
+COPY frontend/*.config.* ./
+COPY frontend/tailwind.config.js ./
+COPY frontend/postcss.config.js ./
+COPY frontend/index.html ./
+
+# Build frontend
+RUN npm run build && ls -la dist/
 
 # Stage 2: Backend with frontend static files
 FROM python:3.11-slim
@@ -25,8 +36,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend/app ./app
 
-# Copy built frontend
+# Copy built frontend - React SPA
 COPY --from=frontend-builder /app/frontend/dist ./static
+RUN ls -la static/ && echo "✅ Frontend static files copied successfully"
 
 # Expose port
 EXPOSE 8000
