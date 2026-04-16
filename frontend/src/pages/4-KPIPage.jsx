@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { useDPT, useKPI } from '../hooks';
+import { useKPI } from '../hooks';
 
 /**
  * Página 4: INDICADORES - Visualização e edição de KPIs
  * Exibe a tabela de KPIs com 16 colunas estruturadas
  * Permite filtros, edição e validação dos indicadores
+ *
+ * Receives `workflow` prop from App.jsx for shared state access.
  */
-export default function KPIPage({ onNext, onPrevious }) {
-  const { dpt } = useDPT();
+export default function KPIPage({ onNext, onPrevious, workflow }) {
+  const dpt = workflow?.dpt ?? null;
   const {
     kpis,
     summary,

@@ -1,15 +1,17 @@
 import { useState } from 'react';
-import { useDPT, useBPMN, useKPI, useExport } from '../hooks';
+import { useExport } from '../hooks';
 
 /**
  * Página 7: EXPORTAÇÃO - Seleção de formatos e download
  * Permite ao usuário escolher entre DOCX, XLSX, BPMN XML ou ZIP
  * Gerencia downloads e histórico de exportações
+ *
+ * Receives `workflow` prop from App.jsx for shared state access.
  */
-export default function ExportPage({ onNext, onPrevious }) {
-  const { dpt } = useDPT();
-  const { bpmn } = useBPMN();
-  const { kpis } = useKPI();
+export default function ExportPage({ onNext, onPrevious, workflow }) {
+  const dpt = workflow?.dpt ?? null;
+  const bpmn = workflow?.bpmn ?? null;
+  const kpis = workflow?.kpis ?? [];
   const {
     selectedFormats,
     exportHistory,

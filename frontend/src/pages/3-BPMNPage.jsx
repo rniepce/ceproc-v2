@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { useDPT, useBPMN } from '../hooks';
+import { useBPMN } from '../hooks';
 
 /**
  * Página 3: VISUAL BPMN - Visualização do diagrama de processo
  * Renderiza o diagrama BPMN gerado a partir da DPT
  * Permite interação com elementos do diagrama e edição manual
+ *
+ * Receives `workflow` prop from App.jsx for shared state access.
  */
-export default function BPMNPage({ onNext, onPrevious }) {
-  const { dpt } = useDPT();
+export default function BPMNPage({ onNext, onPrevious, workflow }) {
+  const dpt = workflow?.dpt ?? null;
   const { bpmn, generateBPMN, validateBPMN, selectedElement, setSelectedElement, loading, error } = useBPMN();
 
   const [showXML, setShowXML] = useState(false);

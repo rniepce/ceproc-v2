@@ -1,15 +1,18 @@
 import { useState } from 'react';
-import { useDPT, useBPMN, useKPI } from '../hooks';
 
 /**
  * Página 6: REVISÃO - Revisão completa de todos os dados coletados
  * Exibe abas para DPT, BPMN, e KPI com opções para edição
  * Resumo executivo do processo analisado
+ *
+ * Receives `workflow` prop from App.jsx for shared state access.
  */
-export default function ReviewPage({ onNext, onPrevious }) {
-  const { dpt, metadata } = useDPT();
-  const { bpmn } = useBPMN();
-  const { kpis, summary: kpiSummary } = useKPI();
+export default function ReviewPage({ onNext, onPrevious, workflow }) {
+  const dpt = workflow?.dpt ?? null;
+  const metadata = workflow?.entrada?.metadata ?? {};
+  const bpmn = workflow?.bpmn ?? null;
+  const kpis = workflow?.kpis ?? [];
+  const kpiSummary = null;
 
   const [activeTab, setActiveTab] = useState('overview');
 

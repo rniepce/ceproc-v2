@@ -1,21 +1,45 @@
 import { useState } from 'react';
-import { useDPT } from '../hooks';
 
 /**
  * Página 2: ANÁLISE - Revisão e edição da DPT extraída
  * Permite ao usuário revisar a estrutura DPT gerada pelo Azure OpenAI
  * Possibilita edição de campos individuais antes de prosseguir
+ *
+ * Receives `workflow` prop from App.jsx for shared state access.
  */
-export default function AnalysisPage({ onNext, onPrevious }) {
-  const {
-    dpt,
-    updateDPTField,
-    updateDPTFields,
-    validateDPT,
-    getDPTStructure,
-    loading,
-    error,
-  } = useDPT();
+export default function AnalysisPage({ onNext, onPrevious, workflow }) {
+  const dpt = workflow?.dpt ?? null;
+  const updateDPTField = workflow?.updateDPTField ?? (() => {});
+
+  // Derive structure from the actual DPT schema fields
+  const getDPTStructure = () => {
+    const requiredFields = [
+      'metadados', 'negocio', 'finalidade', 'conceitos_e_definicoes',
+      'clientes', 'normas_reguladoras', 'descricoes_de_entrada',
+      'principais_etapas', 'descricoes_de_saida', 'atores',
+      'sistemas_e_infraestrutura', 'expectativa_de_melhoria',
+      'documentos_e_indicadores', 'pontos_sensiveis',
+    ];
+    if (!dpt) return { complete: false, presentFields: [], missingFields: requiredFields, percentage: 0 };
+    const presentFields = requiredFields.filter((f) => {
+      const v = dpt[f];
+      if (v === null || v === undefined) return false;
+      if (Array.isArray(v)) return v.length > 0;
+      if (typeof v === 'object' && v.lista !== undefined) return v.lista.length > 0;
+      if (typeof v === 'object') return Object.keys(v).length > 0;
+      return String(v).trim().length > 0;
+    });
+    const missingFields = requiredFields.filter((f) => !presentFields.includes(f));
+    return {
+      complete: missingFields.length === 0,
+      presentFields,
+      missingFields,
+      percentage: Math.round((presentFields.length / requiredFields.length) * 100),
+    };
+  };
+
+  const loading = false;
+  const error = null;
 
   const [expandedSections, setExpandedSections] = useState({
     basico: true,
@@ -43,31 +67,17 @@ export default function AnalysisPage({ onNext, onPrevious }) {
     setEditingField(null);
   };
 
-  const handleValidate = async () => {
-    try {
-      const result = await validateDPT();
-      setValidationResult(result);
-      setValidationMessage(
-        result.is_valid
-          ? '✅ DPT válida! Pronta para prosseguir'
-          : '⚠️ DPT incompleta. Complete os campos faltantes'
-      );
-    } catch (err) {
-      setValidationMessage(`❌ Erro na validação: ${err.message}`);
-    }
+  const handleValidate = () => {
+    const structure = getDPTStructure();
+    setValidationMessage(
+      structure.complete
+        ? '✅ DPT válida! Pronta para prosseguir'
+        : `⚠️ DPT incompleta. Campos ausentes: ${structure.missingFields.join(', ')}`
+    );
   };
 
-  const handleContinue = async () => {
-    try {
-      const result = await validateDPT();
-      if (result.is_valid) {
-        onNext();
-      } else {
-        setValidationMessage('⚠️ Preencha todos os campos obrigatórios antes de continuar');
-      }
-    } catch (err) {
-      setValidationMessage(`❌ Erro: ${err.message}`);
-    }
+  const handleContinue = () => {
+    onNext();
   };
 
   if (!dpt) {
