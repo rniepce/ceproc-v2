@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useWorkflow } from './hooks'
 import EntradaPage from './pages/EntradaPage'
 import DptPage from './pages/DptPage'
-import AnalysisPage from './pages/2-AnalysisPage'
 import BPMNPage from './pages/3-BPMNPage'
 import KPIPage from './pages/4-KPIPage'
 import GargalosPage from './pages/5-GargalosPage'
@@ -13,21 +12,21 @@ import DashboardPage from './pages/8-DashboardPage'
 /**
  * App – Main wizard orchestrator for CEPROC V2.
  *
- * Manages the 8-step wizard flow and owns the shared `workflow` state object
+ * Manages the wizard flow and owns the shared `workflow` state object
  * (via useWorkflow) that is passed as a prop to every page.  This ensures all
  * steps share a single source of truth without relying on individual hooks
  * that each maintain their own isolated state.
  *
- * Step map:
+ * Step map (there is no separate "Análise" step — the LLM analyses the DPT
+ * automatically inside BPMNPage via /api/bpmn using the specialized prompt):
  *   0 – Entrada    (interview text + metadata → calls /api/dpt)
  *   1 – DPT        (review / edit / approve extracted DPT)
- *   2 – Análise    (detailed DPT field review)
- *   3 – BPMN       (generate & view BPMN diagram)
- *   4 – Indicadores (KPI table)
- *   5 – Gargalos   (bottleneck analysis)
- *   6 – Revisão    (full review before export)
- *   7 – Exportação (download DOCX / XLSX / BPMN / ZIP)
- *   8 – Dashboard  (completion summary)
+ *   2 – BPMN       (auto-generate BPMN from approved DPT via LLM)
+ *   3 – Indicadores (KPI table)
+ *   4 – Gargalos   (bottleneck analysis)
+ *   5 – Revisão    (full review before export)
+ *   6 – Exportação (download DOCX / XLSX / BPMN / ZIP)
+ *   7 – Dashboard  (completion summary)
  */
 export default function App() {
   const [currentStep, setCurrentStep] = useState(0)
@@ -36,7 +35,6 @@ export default function App() {
   const pages = [
     { title: 'Entrada',     component: EntradaPage,   icon: '📝' },
     { title: 'DPT',         component: DptPage,       icon: '📄' },
-    { title: 'Análise',     component: AnalysisPage,  icon: '📊' },
     { title: 'BPMN',        component: BPMNPage,      icon: '📐' },
     { title: 'Indicadores', component: KPIPage,       icon: '📈' },
     { title: 'Gargalos',    component: GargalosPage,  icon: '🎯' },
