@@ -110,12 +110,12 @@ async def generate_kpis(request: KPIGenerationRequest):
 
 
 @router.post("/validate")
-async def validate_kpi(kpi: dict):
+async def validate_kpi(request: dict):
     """
     Validate a KPI structure.
 
     Args:
-        kpi: KPI dictionary to validate
+        request: KPI dictionary to validate
 
     Returns:
         Validation results
@@ -134,21 +134,21 @@ async def validate_kpi(kpi: dict):
 
     # Check required fields
     for field in required_fields:
-        if field not in kpi or not kpi[field]:
+        if field not in request or not request[field]:
             errors.append(f"Missing or empty field: {field}")
 
     # Validate field formats
     valid_periodicidades = ["diária", "semanal", "mensal", "trimestral", "anual"]
-    if kpi.get("periodicidade") and kpi["periodicidade"] not in valid_periodicidades:
-        warnings.append(f"Unusual periodicity: {kpi.get('periodicidade')}")
+    if request.get("periodicidade") and request["periodicidade"] not in valid_periodicidades:
+        warnings.append(f"Unusual periodicity: {request.get('periodicidade')}")
 
     valid_polaridades = ["maximizar", "minimizar", "manter"]
-    if kpi.get("polaridade") and kpi["polaridade"] not in valid_polaridades:
-        warnings.append(f"Unusual polarity: {kpi.get('polaridade')}")
+    if request.get("polaridade") and request["polaridade"] not in valid_polaridades:
+        warnings.append(f"Unusual polarity: {request.get('polaridade')}")
 
     valid_criticidades = ["alta", "média", "baixa"]
-    if kpi.get("criticidade") and kpi["criticidade"] not in valid_criticidades:
-        warnings.append(f"Unusual criticality: {kpi.get('criticidade')}")
+    if request.get("criticidade") and request["criticidade"] not in valid_criticidades:
+        warnings.append(f"Unusual criticality: {request.get('criticidade')}")
 
     is_valid = len(errors) == 0
 
@@ -157,7 +157,7 @@ async def validate_kpi(kpi: dict):
         "is_valid": is_valid,
         "errors": errors,
         "warnings": warnings,
-        "fields_present": len([f for f in required_fields if f in kpi and kpi[f]]),
+        "fields_present": len([f for f in required_fields if f in request and request[f]]),
         "fields_total": len(required_fields)
     }
 

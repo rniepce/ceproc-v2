@@ -202,12 +202,12 @@ async def quick_bottleneck_check(dpt: dict):
 
 
 @router.post("/validate-improvement")
-async def validate_improvement(improvement: dict):
+async def validate_improvement(request: dict):
     """
     Validate an improvement opportunity structure.
 
     Args:
-        improvement: Improvement dictionary
+        request: Improvement dictionary
 
     Returns:
         Validation results
@@ -218,12 +218,12 @@ async def validate_improvement(improvement: dict):
     errors = []
 
     for field in required_fields:
-        if field not in improvement or not improvement[field]:
+        if field not in request or not request[field]:
             errors.append(f"Missing field: {field}")
 
     valid_effort = ["low", "medium", "high"]
-    if improvement.get("effort") and improvement["effort"] not in valid_effort:
-        errors.append(f"Invalid effort level: {improvement['effort']}")
+    if request.get("effort") and request["effort"] not in valid_effort:
+        errors.append(f"Invalid effort level: {request['effort']}")
 
     is_valid = len(errors) == 0
 
